@@ -12,7 +12,7 @@ services:
         - STEAMBETAPASSWORD=${STEAMBETAPASSWORD:-}
         - STEAMLOGIN=${STEAMLOGIN}
         - RML=${RML:-false}
-        - PROCMON=${PROCMON:-false}
+        - PROCMON=${PROCMON:-true}
     environment:
       - AUTOUPDATE=${AUTOUPDATE:-true}
       - CLEANASSETS=${CLEANASSETS:-false}
