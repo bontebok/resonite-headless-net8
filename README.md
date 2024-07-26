@@ -16,7 +16,9 @@ mkdir -p {Config,Logs}
 ```
 
 If you will be using Resonite Mod Loader, create the additional directories.
-```mkdir -p {rml_mods,rml_config}```
+```
+mkdir -p {rml_mods,rml_config}
+```
 
 Now create a docker-compose.yaml file based on the ```docker-compose.yaml.sample``` provided in the repository and customize as needed. If you are not going to use the node-red based log monitor, you can remove the 'monitor' service completely. Additionally, you can remove the rml_mods and rml_config folders from the volumes if you do not intend on using the Resonite Mod Loader.
 
