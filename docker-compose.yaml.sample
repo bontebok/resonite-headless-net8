@@ -1,0 +1,62 @@
+services:
+# Primary service, required
+#
+  resonite:
+    hostname: headless
+    build:
+      context: https://github.com/bontebok/resonite-headless-net8.git#:resonite-headless
+      args:
+        - HOSTUSERID=${HOSTUSERID:-1000}
+        - HOSTGROUPID=${HOSTGROUPID:-1000}
+        - STEAMBETA=${STEAMBETA:-headless}
+        - STEAMBETAPASSWORD=${STEAMBETAPASSWORD:-}
+        - STEAMLOGIN=${STEAMLOGIN}
+        - RML=${RML:-false}
+        - PROCMON=${PROCMON:-false}
+    environment:
+      - AUTOUPDATE=${AUTOUPDATE:-true}
+      - CLEANASSETS=${CLEANASSETS:-false}
+      - CLEANLOGS=${CLEANLOGS:-false}
+    tty: true
+    stdin_open: true
+    networks:
+      - resonite
+    volumes:
+      - "./Config:/opt/resonite/Config"
+      - "./Logs:/opt/resonite/Logs"
+      - "./rml_mods:/opt/resonite/rml_mods"
+      - "./rml_config:/opt/resonite/rml_config"
+      - "/etc/localtime:/etc/localtime:ro"
+    restart: unless-stopped
+
+# Optional service
+#
+  monitor:
+    hostname: monitor
+    build:
+      context: https://github.com/bontebok/resonite-headless-net8.git#:headless-status
+      args:
+        - HOSTUSERID=${HOSTUSERID:-1000}
+        - HOSTGROUPID=${HOSTGROUPID:-1000}
+        - RML=${RML:-false}
+        - PROCMON=${PROCMON:-false}
+    tty: true
+    stdin_open: true
+    environment:
+      - PORT=${NODEREDPORT:-80}
+    networks:
+      - resonite
+    volumes:
+      - node-red-data:/data
+      - "./Config:/Config"
+      - "./Logs:/Logs"
+      - "/etc/localtime:/etc/localtime:ro"
+    restart: unless-stopped
+
+volumes:
+  node-red-data:
+
+networks:
+  resonite:
+    enable_ipv6: false
+    driver: bridge

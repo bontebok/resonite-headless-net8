@@ -1,0 +1,422 @@
+[
+    {
+        "id": "94e0cfdd6db47056",
+        "type": "tab",
+        "label": "Log Monitoring",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "769e7ae6355955a1",
+        "type": "tab",
+        "label": "Process Monitoring",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "364e5b0c3f042213",
+        "type": "websocket-listener",
+        "path": "/ws/status",
+        "wholemsg": "false"
+    },
+    {
+        "id": "b365bcbefa8254df",
+        "type": "websocket-client",
+        "path": "ws://headless:8080/",
+        "tls": "",
+        "wholemsg": "false",
+        "hb": "0",
+        "subprotocol": ""
+    },
+    {
+        "id": "5a202854ad7558e6",
+        "type": "websocket-listener",
+        "path": "/ws/top",
+        "wholemsg": "false"
+    },
+    {
+        "id": "f1e07af5bdf6969b",
+        "type": "watch",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "files": "/Logs",
+        "recursive": false,
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "e285682bc8560b90"
+            ]
+        ]
+    },
+    {
+        "id": "f720637e7f677349",
+        "type": "tail-file",
+        "z": "94e0cfdd6db47056",
+        "filename": "",
+        "createFile": false,
+        "mode": "",
+        "encoding": "utf-8",
+        "split": true,
+        "separator": "",
+        "fromBeginning": true,
+        "flushAtEOF": false,
+        "rememberLast": true,
+        "limitSize": false,
+        "maxBytes": "",
+        "skipBlank": true,
+        "useTrim": true,
+        "sendError": false,
+        "interval": "100",
+        "name": "",
+        "x": 730,
+        "y": 160,
+        "wires": [
+            [
+                "c93ad5e86cd2edc7"
+            ]
+        ]
+    },
+    {
+        "id": "e285682bc8560b90",
+        "type": "rbe",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 290,
+        "y": 160,
+        "wires": [
+            [
+                "2c406d91c89afdd4"
+            ]
+        ]
+    },
+    {
+        "id": "84e4aea45713fc23",
+        "type": "change",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "tail-file-filename",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 590,
+        "y": 160,
+        "wires": [
+            [
+                "f720637e7f677349"
+            ]
+        ]
+    },
+    {
+        "id": "c93ad5e86cd2edc7",
+        "type": "switch",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "(?:[01]\\d|2[0123]):(?:[012345]\\d):(?:[012345]\\d)",
+                "vt": "str",
+                "case": false
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 850,
+        "y": 160,
+        "wires": [
+            [
+                "1cc44ccfbf793172"
+            ]
+        ]
+    },
+    {
+        "id": "1cc44ccfbf793172",
+        "type": "function",
+        "z": "94e0cfdd6db47056",
+        "name": "Timestamp",
+        "func": "function getMilliseconds(sec) {\n  return (sec % 1) * 1000;\n}\n\nfunction toUnixTime(i) {\n  const d = new Date();\n  const [hours, minutes, seconds] = i.split(':');\n\n  d.setHours(+hours); // Set the hours, using implicit type coercion\n  d.setMinutes(minutes); // can pass Number or String - doesn't really matter\n  d.setSeconds(seconds); // seems to ignore anything after the decimal\n  d.setMilliseconds(getMilliseconds(seconds)); // Milliseconds for accuracy\n    \n  return d.valueOf();\n}\n\nfunction toUnixTimeSeconds(i) {\n    const uTimeMs = toUnixTime(i);\n    return Math.floor(uTimeMs / 1000);\n}\n\n\nconst log = msg.payload.split('\\t');\n\nif (log.length > 1) {\n    msg.payload = {\n        timestamp: toUnixTime(log[0]),\n        log: log[1]\n    }\n    //msg.payload = log;\n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 990,
+        "y": 160,
+        "wires": [
+            [
+                "1b2ab12e831e1a3c"
+            ]
+        ]
+    },
+    {
+        "id": "1e2456e7b5e4080f",
+        "type": "function",
+        "z": "94e0cfdd6db47056",
+        "name": "Return All Keys",
+        "func": "msg.payload = flow.keys();\n\nconst p = {};\n\nfor (const key of flow.keys()) {\n    p[key] = flow.get(key);\n}\nmsg.payload = p;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 300,
+        "wires": [
+            [
+                "f3bd6fc4d65149c8"
+            ]
+        ]
+    },
+    {
+        "id": "b4d2efde2d8ef0c4",
+        "type": "websocket in",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "server": "364e5b0c3f042213",
+        "client": "",
+        "x": 200,
+        "y": 300,
+        "wires": [
+            [
+                "58de9cf524f556a9"
+            ]
+        ]
+    },
+    {
+        "id": "49564e98e37df47e",
+        "type": "websocket out",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "server": "364e5b0c3f042213",
+        "client": "",
+        "x": 620,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "ae9c9326fa4c2ddf",
+        "type": "split",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "event",
+        "x": 250,
+        "y": 440,
+        "wires": [
+            [
+                "75242c52856fbb97"
+            ]
+        ]
+    },
+    {
+        "id": "75242c52856fbb97",
+        "type": "change",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.event&','&msg.payload",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 440,
+        "wires": [
+            [
+                "49564e98e37df47e"
+            ]
+        ]
+    },
+    {
+        "id": "58de9cf524f556a9",
+        "type": "switch",
+        "z": "94e0cfdd6db47056",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "fetch",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 370,
+        "y": 300,
+        "wires": [
+            [
+                "1e2456e7b5e4080f"
+            ]
+        ]
+    },
+    {
+        "id": "9d9950a91f973129",
+        "type": "link out",
+        "z": "94e0cfdd6db47056",
+        "name": "Send Update",
+        "mode": "link",
+        "links": [
+            "3de7b5259ddb9fc7"
+        ],
+        "x": 1235,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "3de7b5259ddb9fc7",
+        "type": "link in",
+        "z": "94e0cfdd6db47056",
+        "name": "Send Update",
+        "links": [
+            "9d9950a91f973129",
+            "f3bd6fc4d65149c8"
+        ],
+        "x": 135,
+        "y": 440,
+        "wires": [
+            [
+                "ae9c9326fa4c2ddf"
+            ]
+        ]
+    },
+    {
+        "id": "1b2ab12e831e1a3c",
+        "type": "function",
+        "z": "94e0cfdd6db47056",
+        "name": "Event",
+        "func": "const events = {\n    \"Initializing App\": \"uptime\",\n    \"Autosaving\": \"autosaving\",\n    \"Saving world\": \"savingworld\",\n    \"World Saved!\": \"worldsaved\",\n    \"Finished save world\": \"finishedsave\",\n    \"Starting sync\": \"startingsync\",\n    \"Finished sync\": \"finishedsync\",\n    \"Engine has been unresponsive\": \"unresponsive\",\n    \"Upload failed\": \"uploadfailed\",\n    \"World Update is taking over\": \"worldupdate\"\n}\n\nconst log = msg.payload.log;\nconst timestamp = msg.payload.timestamp;\n\nfor (const [key,event] of Object.entries(events)) {\n    if(log.startsWith(key)) {\n        // Found \n        const p = {}\n        flow.set(event,timestamp);\n        let eventcount = flow.get(event+\"_count\");\n        if (eventcount) eventcount += 1; else eventcount = 1;\n        flow.set(event+\"_count\",eventcount);\n        p[event] = timestamp;\n        p[event+\"_count\"] = eventcount;\n        msg.payload = p;\n        return msg;\n    }\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1130,
+        "y": 160,
+        "wires": [
+            [
+                "9d9950a91f973129"
+            ]
+        ]
+    },
+    {
+        "id": "2c406d91c89afdd4",
+        "type": "function",
+        "z": "94e0cfdd6db47056",
+        "name": "Clear Keys",
+        "func": "for (const key of flow.keys()) {\n    flow.set(key);\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 160,
+        "wires": [
+            [
+                "84e4aea45713fc23"
+            ]
+        ]
+    },
+    {
+        "id": "f3bd6fc4d65149c8",
+        "type": "link out",
+        "z": "94e0cfdd6db47056",
+        "name": "Send Update",
+        "mode": "link",
+        "links": [
+            "3de7b5259ddb9fc7"
+        ],
+        "x": 675,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "f606854668f9316f",
+        "type": "websocket in",
+        "z": "769e7ae6355955a1",
+        "name": "",
+        "server": "",
+        "client": "b365bcbefa8254df",
+        "x": 230,
+        "y": 160,
+        "wires": [
+            [
+                "4aee70c687717525"
+            ]
+        ]
+    },
+    {
+        "id": "4aee70c687717525",
+        "type": "change",
+        "z": "769e7ae6355955a1",
+        "name": "",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "_session",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 580,
+        "y": 160,
+        "wires": [
+            [
+                "2cd6ba82d54d8946"
+            ]
+        ]
+    },
+    {
+        "id": "2cd6ba82d54d8946",
+        "type": "websocket out",
+        "z": "769e7ae6355955a1",
+        "name": "",
+        "server": "5a202854ad7558e6",
+        "client": "",
+        "x": 890,
+        "y": 160,
+        "wires": []
+    }
+]

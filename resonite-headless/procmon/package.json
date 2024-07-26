@@ -1,0 +1,15 @@
+{
+  "name": "procmon",
+  "version": "1.0.0",
+  "main": "procmon.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
