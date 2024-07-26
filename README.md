@@ -6,16 +6,20 @@ Usage: Create a directory which will contain the headless server files. Within t
 Example:
 ```mkdir myheadless && cd myheadless```
 
-```Config
-Logs```
+```
+Config
+Logs
+```
 
 Example:
 ```mkdir -p {Config,Logs}```
 
 If you intend on using the Resonite Mod Loader, create these additional directories:
 
-```rml_mods
-rml_config```
+```
+rml_mods
+rml_config
+```
 
 Example:
 ```mkdir -p {rml_mods,rml_config}```
