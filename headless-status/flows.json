@@ -136,7 +136,7 @@
         "rules": [
             {
                 "t": "regex",
-                "v": "(?:[01]\\d|2[0123]):(?:[012345]\\d):(?:[012345]\\d)",
+                "v": "^([0-1]?\\d|2[0-3])(?::([0-5]?\\d))?(?::([0-5]?\\d))?\\u202F([AP]M)\\.([\\d]+)\\t",
                 "vt": "str",
                 "case": false
             }
@@ -157,8 +157,9 @@
         "type": "function",
         "z": "94e0cfdd6db47056",
         "name": "Timestamp",
-        "func": "function getMilliseconds(sec) {\n  return (sec % 1) * 1000;\n}\n\nfunction toUnixTime(i) {\n  const d = new Date();\n  const [hours, minutes, seconds] = i.split(':');\n\n  d.setHours(+hours); // Set the hours, using implicit type coercion\n  d.setMinutes(minutes); // can pass Number or String - doesn't really matter\n  d.setSeconds(seconds); // seems to ignore anything after the decimal\n  d.setMilliseconds(getMilliseconds(seconds)); // Milliseconds for accuracy\n    \n  return d.valueOf();\n}\n\nfunction toUnixTimeSeconds(i) {\n    const uTimeMs = toUnixTime(i);\n    return Math.floor(uTimeMs / 1000);\n}\n\n\nconst log = msg.payload.split('\\t');\n\nif (log.length > 1) {\n    msg.payload = {\n        timestamp: toUnixTime(log[0]),\n        log: log[1]\n    }\n    //msg.payload = log;\n    return msg;\n}\n\nreturn null;",
+        "func": "const re = /^([0-1]?\\d|2[0-3])(?::([0-5]?\\d))?(?::([0-5]?\\d))?\\u202F([AP]M)\\.([\\d]+)/\n\nfunction getMilliseconds(sec) {\n    return (sec % 1) * 1000;\n}\n\nfunction toUnixTime(i) {\n\n    const d = new Date();\n    let [, hours, minutes, seconds, ampm, ms] = i.match(re);\n\n    const finalhours = ampm == \"AM\" ? parseInt(hours) : parseInt(hours) + 12;\n    const finalminutes = parseInt(minutes);\n    const finalseconds = Number(seconds + \".\" + ms);\n\n    d.setHours(finalhours); // Set the hours, using implicit type coercion\n    d.setMinutes(finalminutes); // can pass Number or String - doesn't really matter\n    d.setSeconds(finalseconds); // seems to ignore anything after the decimal\n    d.setMilliseconds(getMilliseconds(finalseconds)); // Milliseconds for accuracy\n\n    return d.valueOf();\n}\n\nfunction toUnixTimeSeconds(i) {\n    const uTimeMs = toUnixTime(i);\n    return Math.floor(uTimeMs / 1000);\n}\n\nconst log = msg.payload.split('\\t');\n\nif (log.length > 1) {\n    msg.payload = {\n        timestamp: toUnixTime(log[0]),\n        log: log[1]\n    }\n    return msg;\n}\n\nreturn null;\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -324,6 +325,7 @@
         "name": "Event",
         "func": "const events = {\n    \"Initializing App\": \"uptime\",\n    \"Autosaving\": \"autosaving\",\n    \"Saving world\": \"savingworld\",\n    \"World Saved!\": \"worldsaved\",\n    \"Finished save world\": \"finishedsave\",\n    \"Starting sync\": \"startingsync\",\n    \"Finished sync\": \"finishedsync\",\n    \"Engine has been unresponsive\": \"unresponsive\",\n    \"Upload failed\": \"uploadfailed\",\n    \"World Update is taking over\": \"worldupdate\"\n}\n\nconst log = msg.payload.log;\nconst timestamp = msg.payload.timestamp;\n\nfor (const [key,event] of Object.entries(events)) {\n    if(log.startsWith(key)) {\n        // Found \n        const p = {}\n        flow.set(event,timestamp);\n        let eventcount = flow.get(event+\"_count\");\n        if (eventcount) eventcount += 1; else eventcount = 1;\n        flow.set(event+\"_count\",eventcount);\n        p[event] = timestamp;\n        p[event+\"_count\"] = eventcount;\n        msg.payload = p;\n        return msg;\n    }\n}\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",

@@ -4,12 +4,11 @@ const WebSocketServer = require('ws');
 const wss = new WebSocketServer.Server({ port: 8080 });
 
 const timeout = 100; // 100ms timeout to process buffer
-const lines = 12;
+const lines = 20;
 const columns=180;
 
-//const cmd = "top -bi -H -p 12206";
 const cmd = "top";
-const args = ["-b","-wi","-H","-p 1"];
+const args = ["-b","-i","-w","-H","-p 1"];
 
 let timer;
 let buffer = Buffer.alloc(0);
@@ -28,8 +27,6 @@ const sendProc = () => {
 }
 
 const topProcess = subProcess.spawn(cmd,args, {env: {LINES:lines, COLUMNS:columns}}); // Spawn top
-
-//topProcess.on("exit", () => console.log("the top command finished"));
 
 topProcess.stdout.on("data", (data) => {
   // Data came in, set a timer to process it
