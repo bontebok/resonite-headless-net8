@@ -95,13 +95,11 @@ RUN	${HEADLESSDIR}/scripts/install_resonite.sh
 # ResoniteModLoader
 FROM build AS rml-true
 
-#TODO
-#RUN	mkdir -p ${HEADLESSDIR}/rml_libs ${HEADLESSDIR}/rml_mods ${HEADLESSDIR}/rml_config ${HEADLESSDIR}/Headless/Libraries && \
-#	ln -sf ${HEADLESSDIR}/rml_libs ${HEADLESSDIR}/Headless/rml_libs && \
-#	ln -sf ${HEADLESSDIR}/rml_mods ${HEADLESSDIR}/Headless/rml_mods && \
-#	ln -sf ${HEADLESSDIR}/rml_config ${HEADLESSDIR}/Headless/rml_config && \
-#	curl -sqLo ${HEADLESSDIR}/Headless/Libraries/ResoniteModLoaderHeadless.dll ${RMLURL} &&\
-#	curl -sqLo ${HEADLESSDIR}/rml_libs/0Harmony.dll ${RMLLIBURL}
+RUN	mkdir -p ${STEAMAPPDIR}/Headless/Libraries ${STEAMAPPDIR}/Headless/rml_libs && \
+	ln -sf ${HEADLESSDIR}/rml_mods ${STEAMAPPDIR}/Headless/rml_mods && \
+	ln -sf ${HEADLESSDIR}/rml_config ${STEAMAPPDIR}/Headless/rml_config && \
+	curl -sqLo ${STEAMAPPDIR}/Headless/Libraries/ResoniteModLoader.dll ${RMLURL} &&\
+	curl -sqLo ${STEAMAPPDIR}/Headless/rml_libs/0Harmony-Net8.dll ${RMLLIBURL}
 
 # Do nothing
 FROM build AS rml-false
