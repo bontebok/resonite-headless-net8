@@ -1,5 +1,5 @@
-# resonite-headless-net8
-A docker image for Resonite's .NET 8 headless, includes components to aid in monitoring logs and thread performance of the headless server. You do not need to clone this repository to use, see the full instructions below.
+# resonite-headless-net8 (.NET 9)
+A docker image for Resonite's .NET 9 headless, includes components to aid in monitoring logs and thread performance of the headless server. You do not need to clone this repository to use, see the full instructions below.
 
 Usage: Create a directory which will contain the headless server files. Within this directory, create the following directories:
 
