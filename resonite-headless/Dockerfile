@@ -8,7 +8,7 @@ ARG	HOSTUSERID=1000 \
 	PROCMON=false \
 	AUTOUPDATE=false
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0-bookworm-slim AS build
+FROM mcr.microsoft.com/dotnet/runtime:9.0-bookworm-slim AS build
 
 LABEL name=resonite-headless maintainer="rucio"
 
