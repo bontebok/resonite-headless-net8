@@ -30,7 +30,7 @@ ENV	STEAMAPPID=2519830 \
 	DATADIR=/opt/resonite/Data \
 	CACHEDIR=/opt/resonite/Cache \
 	STEAMCMDURL="https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" \
-	RMLLIBURL="https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/0Harmony-Net8.dll" \
+	RMLLIBURL="https://github.com/stiefeljackal/pardeike.Harmony/releases/latest/download/0Harmony.dll" \
 	RMLURL="https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/ResoniteModLoader.dll" \
 	CLEANASSETS=false \
 	CLEANLOGS=false \
@@ -99,7 +99,7 @@ RUN	mkdir -p ${STEAMAPPDIR}/Headless/Libraries ${STEAMAPPDIR}/Headless/rml_libs 
 	ln -sf ${HEADLESSDIR}/rml_mods ${STEAMAPPDIR}/Headless/rml_mods && \
 	ln -sf ${HEADLESSDIR}/rml_config ${STEAMAPPDIR}/Headless/rml_config && \
 	curl -sqLo ${STEAMAPPDIR}/Headless/Libraries/ResoniteModLoader.dll ${RMLURL} &&\
-	curl -sqLo ${STEAMAPPDIR}/Headless/rml_libs/0Harmony-Net8.dll ${RMLLIBURL}
+	curl -sqLo ${STEAMAPPDIR}/Headless/rml_libs/0Harmony.dll ${RMLLIBURL}
 
 # Do nothing
 FROM build AS rml-false
