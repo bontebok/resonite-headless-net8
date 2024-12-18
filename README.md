@@ -1,3 +1,6 @@
+# Updated 12/17/2024
+Now includes ResoniteModLoader support for .NET 9 thanks to @StiefelJackal's PR. (https://github.com/pardeike/Harmony/pull/637)
+
 # resonite-headless-net8 (.NET 9)
 A docker image for Resonite's .NET 9 headless, includes components to aid in monitoring logs and thread performance of the headless server. You do not need to clone this repository to use, see the full instructions below.
 
