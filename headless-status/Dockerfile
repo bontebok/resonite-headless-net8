@@ -39,7 +39,7 @@ COPY settings.js /data/settings.js
 COPY flows.json /data/flows.json
 
 # Install node and dependencies
-RUN npm install --unsafe-perm --no-update-notifier --no-audit --no-fund --omit=dev
+RUN npm install --no-update-notifier --no-audit --no-fund --omit=dev
 
 # Expose the listening port of node-red
 # EXPOSE 1880/tcp

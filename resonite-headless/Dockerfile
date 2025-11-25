@@ -8,9 +8,10 @@ ARG	HOSTUSERID=1000 \
 	PROCMON=false \
 	AUTOUPDATE=false
 
-FROM mcr.microsoft.com/dotnet/runtime:9.0-bookworm-slim AS build
+#FROM mcr.microsoft.com/dotnet/runtime:9.0-bookworm-slim AS build
+FROM	mcr.microsoft.com/dotnet/runtime:10.0-noble AS build
 
-LABEL name=resonite-headless maintainer="rucio"
+LABEL	name=resonite-headless maintainer="rucio"
 
 ARG	HOSTUSERID=1000 \
 	HOSTGROUPID=1000 \
@@ -46,9 +47,9 @@ ENV	STEAMAPPID=2519830 \
 
 # Prepare the basic environment and clean
 RUN	set -x && \
-        dpkg --add-architecture i386 && \
+	dpkg --add-architecture i386 && \
 	apt-get -y update && apt-get -y dist-upgrade && \
-	apt-get --no-install-recommends -y install curl lib32gcc-s1 libopus0 opus-tools libc6-dev libfreetype6 unzip procps && \
+	apt-get --no-install-recommends -y install adduser curl lib32gcc-s1 libopus0 opus-tools libc6-dev libfreetype6 unzip procps && \
 	apt-get -y clean && rm -rf /var/lib/{apt,dpkg,cache}
 
 
@@ -77,7 +78,7 @@ RUN	mkdir -p ${STEAMCMDDIR} ${HEADLESSDIR} ${STEAMAPPDIR} ${DATADIR} ${CACHEDIR}
 	chown -R ${USER}:${USER} ${STEAMCMDDIR} ${HEADLESSDIR} ${STEAMAPPDIR} ${DATADIR} ${CACHEDIR}
 
 # Switch user context
-USER ${USER}
+USER	${USER}
 
 # Copy any custom patches (N/A)
 #COPY	--chown=${USER}:${USER} patches ${HEADLESSDIR}/patches
@@ -93,7 +94,7 @@ RUN	cd ${STEAMCMDDIR} && \
 RUN	${HEADLESSDIR}/scripts/install_resonite.sh
 
 # ResoniteModLoader
-FROM build AS rml-true
+FROM	build AS rml-true
 
 RUN	mkdir -p ${STEAMAPPDIR}/Headless/Libraries ${STEAMAPPDIR}/Headless/rml_libs && \
 	ln -sf ${HEADLESSDIR}/rml_mods ${STEAMAPPDIR}/Headless/rml_mods && \
@@ -102,12 +103,12 @@ RUN	mkdir -p ${STEAMAPPDIR}/Headless/Libraries ${STEAMAPPDIR}/Headless/rml_libs 
 	curl -sqLo ${STEAMAPPDIR}/Headless/rml_libs/0Harmony.dll ${RMLLIBURL}
 
 # Do nothing
-FROM build AS rml-false
+FROM	build AS rml-false
 
-FROM rml-${RML} AS rml
+FROM	rml-${RML} AS rml
 
 # Procmon
-FROM rml AS procmon-true
+FROM	rml AS procmon-true
 
 ENV	FNM_PATH="/home/resonite/.local/share/fnm"
 
@@ -124,11 +125,11 @@ RUN	eval "$(fnm env --shell=bash)" && \
 	npm install --unsafe-perm --no-update-notifier --no-audit --no-fund --omit=dev
 
 # Do nothing
-FROM rml AS procmon-false
+FROM	rml AS procmon-false
 
-FROM procmon-${PROCMON} AS base
+FROM	procmon-${PROCMON} AS base
 
-WORKDIR ${HEADLESSDIR}
+WORKDIR	${HEADLESSDIR}
 
 STOPSIGNAL SIGINT
 
