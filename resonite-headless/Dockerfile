@@ -63,6 +63,11 @@ RUN	DEBIAN_FRONTEND=noninteractive apt-get install -y locales && \
 
 ENV	LANG en_US.UTF-8
 
+# Delete default app & ubuntu users
+RUN	deluser --quiet ubuntu && \
+	deluser --quiet app && \
+	rm -rf /home/{ubuntu,app}
+
 # Create user, install SteamCMD
 RUN	addgroup --gid ${HOSTGROUPID} ${USER}
 
