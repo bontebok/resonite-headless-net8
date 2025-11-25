@@ -1,4 +1,4 @@
-# Updated 12/17/2024
+# Updated 11/24/2025
 Now includes ResoniteModLoader support for .NET 10.
 
 # resonite-headless-net8 (.NET 9)
